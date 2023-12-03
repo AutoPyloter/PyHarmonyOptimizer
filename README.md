@@ -78,7 +78,7 @@ def calculate_cost(harmony):
 
 # Tasarım Değişkenleri
 design = {
-    'H': Discrete([10, 12, 13, 17]),
+    'H': Discrete([10, 12, 13, 17]),  #cm
     'Top': Categorical(["açık", "kapalı"]),
     'SideThickness': Continuous(2, 3),  # mm
     'Diameter': Discrete([3, 4, 5, 6]),  # cm
