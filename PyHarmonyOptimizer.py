@@ -1,6 +1,12 @@
 import random
+from abc import ABC, abstractmethod
 
-class Continuous:
+class Sampler(ABC):
+    @abstractmethod
+    def sample(self):
+        pass
+
+class Continuous(Sampler):
     def __init__(self, min_val, max_val):
         self.min_val = min_val
         self.max_val = max_val
@@ -8,28 +14,28 @@ class Continuous:
     def sample(self):
         return random.uniform(self.min_val, self.max_val)
 
-class Discrete:
+class Discrete(Sampler):
     def __init__(self, values):
         self.values = values
 
     def sample(self):
         return random.choice(self.values)
 
-class Constant:
+class Constant(Sampler):
     def __init__(self, value):
         self.value = value
 
     def sample(self):
         return self.value
 
-class Categorical:
+class Categorical(Sampler):
     def __init__(self, categories):
         self.categories = categories
 
     def sample(self):
         return random.choice(self.categories)
 
-class Optimization:
+class Optimization(ABC):
     def __init__(self, design, objective):
         self.design = design
         self.objective = objective
@@ -50,6 +56,10 @@ class Optimization:
             if random.random() < PAR:
                 new_harmony[var] = self.design[var].sample()
         return new_harmony
+
+    @abstractmethod
+    def optimize(self, HMCR, PAR, memory_size, max_iter):
+        pass
 
 class Minimization(Optimization):
     def optimize(self, HMCR, PAR, memory_size, max_iter):
