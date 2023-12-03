@@ -1,6 +1,6 @@
 # PyHarmonyOptimizer
 
-PyHarmonyOptimizer, Python'da yazılmış esnek ve kullanımı kolay bir Harmony Search optimizasyon modülüdür. Bu modül, çeşitli türlerdeki optimizasyon problemlerini çözmek için tasarlanmıştır ve özellikle minimizasyon problemleri üzerine odaklanır.
+PyHarmonyOptimizer, Python'da yazılmış esnek ve kullanımı kolay bir Harmony Search optimizasyon modülüdür. Bu modül, çeşitli türlerdeki optimizasyon problemlerini çözmek için tasarlanmıştır ve özellikle minimizasyon problemleri üzerine odaklanır. https://colab.research.google.com/drive/1lhOlFs1Zl2Bog_fQh4m7R84ZsErIP2-t#scrollTo=N4Svh3WTS2gA
 
 ## Harmony Arama Algoritması Nedir?
 
