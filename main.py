@@ -1,4 +1,4 @@
-from pyharmony import Continuous, Discrete, Categorical, Minimization
+from PyHarmonyOptimizer import Continuous, Discrete, Categorical, Minimization
 
 # Amaç Fonksiyonu
 def objective_function(harmony):
