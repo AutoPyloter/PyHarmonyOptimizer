@@ -45,7 +45,7 @@ Bu senaryo, fabrikanın karşılaştığı optimizasyon problemine ve bu problem
 **Bu senaryonun çözümünde modülün kullanımı**
 
 ```python
-from pyharmony import Continuous, Discrete, Categorical, Constant, Minimization
+from PyHarmonyOptimizer import Continuous, Discrete, Categorical, Constant, Minimization
 import math
 
 def calculate_volume(D, H):
