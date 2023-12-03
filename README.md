@@ -70,7 +70,7 @@ def calculate_cost(harmony):
     # Maliyeti hesapla
     cost = total_metal_volume * metal_cost_per_cm3
 
-    # Eğer hacim 300 cm³'ten azsa 10 dolar ekle
+    # Eğer hacim 250 cm³'ten azsa 100 dolar ekle
     if volume < 250:
         cost += 100
 
