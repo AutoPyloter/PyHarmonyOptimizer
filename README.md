@@ -48,49 +48,66 @@ Bu senaryo, fabrikanın karşılaştığı optimizasyon problemine ve bu problem
 from PyHarmonyOptimizer import Continuous, Discrete, Categorical, Constant, Minimization
 import math
 
-def calculate_volume(D, H):
-    radius = D / 2
-    return math.pi * math.pow(radius, 2) * H
+class Cylinder:
+    def __init__(self, diameter, height, side_thickness, base_thickness, is_top_open):
+        self.diameter = diameter
+        self.height = height
+        self.side_thickness = side_thickness
+        self.base_thickness = base_thickness
+        self.is_top_open = is_top_open
 
-def calculate_cost(harmony):
-    H, Top, SideThickness, Diameter, BaseThickness = harmony['H'], harmony['Top'], harmony['SideThickness'], harmony['Diameter'], harmony['BaseThickness']
-    metal_cost_per_cm3 = 3  # dolar
-    volume = calculate_volume(Diameter, H)
-    
-    # İlk olarak tabanın hacmini hesapla
-    total_metal_volume = math.pi * math.pow(Diameter / 2, 2) * BaseThickness / 10
+    def volume(self):
+        radius = self.diameter / 2
+        return math.pi * radius ** 2 * self.height
 
-    # Yan yüzey kalınlığını kontrol et
-    if Top == "açık":
-        SideThickness *= 2
-    else:
-        # Üst kapalıysa, üst dairenin hacmini de ekle
-        total_metal_volume += math.pi * math.pow(Diameter / 2, 2) * BaseThickness / 10
+    def metal_volume(self):
+        radius = self.diameter / 2
+        base_volume = math.pi * radius ** 2 * self.base_thickness / 10
 
-    # Yan yüzeyin hacmini ekle
-    total_metal_volume += math.pi * Diameter * H * SideThickness / 10
+        if self.is_top_open:
+            self.side_thickness *= 2
+        else:
+            base_volume += math.pi * radius ** 2 * self.base_thickness / 10
 
-    # Maliyeti hesapla
-    cost = total_metal_volume * metal_cost_per_cm3
+        side_volume = math.pi * self.diameter * self.height * self.side_thickness / 10
+        return base_volume + side_volume
 
-    # Eğer hacim 250 cm³'ten azsa 100 dolar ekle
-    if volume < 250:
-        cost += 100
+class CostCalculator:
+    METAL_COST_PER_CM3 = 3  # dolar
 
-    return cost
+    def calculate_cost(self, cylinder):
+        volume = cylinder.volume()
+        metal_volume = cylinder.metal_volume()
+        cost = metal_volume * self.METAL_COST_PER_CM3
 
-# Tasarım Değişkenleri
-design = {
-    'H': Discrete([10, 12, 13, 17]),  #cm
-    'Top': Categorical(["açık", "kapalı"]),
-    'SideThickness': Continuous(2, 3),  # mm
-    'Diameter': Discrete([3, 4, 5, 6]),  # cm
-    'BaseThickness': Constant(2)  # Taban ve üst kalınlığı, mm
-}
+        if volume < 250:
+            cost += 100
 
-# Optimizasyon
-optimizer = Minimization(design, calculate_cost)
-best_solution = optimizer.optimize(HMCR=0.8, PAR=0.3, memory_size=100, max_iter=1000)
+        return cost
+
+def create_cylinder_design():
+    return {
+        'H': Discrete([10, 12, 13, 17]),  # cm
+        'Top': Categorical(["açık", "kapalı"]),
+        'SideThickness': Continuous(2, 3),  # mm
+        'Diameter': Discrete([3, 4, 5, 6]),  # cm
+        'BaseThickness': Constant(2)  # Taban ve üst kalınlığı, mm
+    }
+
+def optimize_design():
+    design = create_cylinder_design()
+    cost_calculator = CostCalculator()
+
+    def objective_function(harmony):
+        is_top_open = harmony['Top'] == "açık"
+        cylinder = Cylinder(harmony['Diameter'], harmony['H'], harmony['SideThickness'], harmony['BaseThickness'], is_top_open)
+        return cost_calculator.calculate_cost(cylinder)
+
+    optimizer = Minimization(design, objective_function)
+    best_solution = optimizer.optimize(HMCR=0.8, PAR=0.3, memory_size=100, max_iter=1000)
+    return best_solution
+
+best_solution = optimize_design()
 print("En iyi çözüm:", best_solution)
 ```
 ---
