@@ -41,7 +41,7 @@ Bu senaryo, fabrikanın karşılaştığı optimizasyon problemine ve bu problem
 
 **Bu senaryonun çözümünde modülün kullanımı**
 
-,,,python
+'''python
 from pyharmony import Continuous, Discrete, Categorical, Constant, Minimization
 import math
 
