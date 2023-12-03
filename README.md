@@ -92,6 +92,7 @@ design = {
 optimizer = Minimization(design, calculate_cost)
 best_solution = optimizer.optimize(HMCR=0.8, PAR=0.3, memory_size=100, max_iter=1000)
 print("En iyi çözüm:", best_solution)
+
 ```python
 ---
 
