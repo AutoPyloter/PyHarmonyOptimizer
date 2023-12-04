@@ -1,6 +1,6 @@
 # PyHarmonyOptimizer
 
-PyHarmonyOptimizer, Python'da yazılmış esnek ve kullanımı kolay bir Harmony Search optimizasyon modülüdür. Bu modül, çeşitli türlerdeki optimizasyon problemlerini çözmek için tasarlanmıştır ve özellikle minimizasyon problemleri üzerine odaklanır.
+PyHarmonyOptimizer, Python’da yazılmış esnek ve kullanımı kolay bir Harmony Search optimizasyon modülüdür. Bu modül, çeşitli türlerdeki optimizasyon problemlerini çözmek için tasarlanmıştır ve hem minimizasyon hem de maksimizasyon problemleri üzerine odaklanır. Genişletilmiş özellikler ve gelişmiş algoritmalar içerir, bu sayede çeşitli alanlardaki optimizasyon ihtiyaçlarınıza uyum sağlar.
 
 ### Google Colaboratory üzerinden açmak için:
 https://colab.research.google.com/github/AutoPyloter/PyHarmonyOptimizer/blob/main/PyHarmony.ipynb
@@ -13,10 +13,15 @@ Harmony Search (HS), müzikal süreçlerden esinlenerek geliştirilmiş bir meta
 
 PyHarmonyOptimizer, aşağıdaki özelliklere sahiptir:
 
-- **Çeşitli Değişken Türleri**: Modül, kategorik, sürekli ve kesikli değişkenlerin tanımlanmasına olanak tanır. Bu sayede farklı türdeki optimizasyon problemleri üzerinde çalışabilir.
-- **Esneklik**: Kullanıcılar, kendi amaç fonksiyonlarını tanımlayabilir ve algoritmanın bu fonksiyonları optimize etmesini sağlayabilir.
-- **Minimizasyon Yeteneği**: Bu modül, özellikle minimizasyon problemlerini çözmek için tasarlanmıştır.
-- **HMCR ve PAR Parametreleri**: Harmony Memory Considering Rate (HMCR) ve Pitch Adjustment Rate (PAR) parametreleri sayesinde, algoritmanın arama davranışı üzerinde detaylı kontrol sağlanır.
+- **Çeşitli Değişken Türleri:** Modül, kategorik, sürekli ve kesikli değişkenlerin tanımlanmasına olanak tanır. Farklı türdeki optimizasyon problemleri üzerinde çalışabilme esnekliği sağlar.
+  
+- **Esneklik:** Kullanıcılar, kendi amaç fonksiyonlarını tanımlayabilir ve algoritmanın bu fonksiyonları optimize etmesini sağlayabilir.
+  
+- **Geniş Optimizasyon Yetenekleri:** Bu modül, hem minimizasyon hem de maksimizasyon problemlerini çözmek üzere genişletilmiş yeteneklere sahiptir.
+  
+- **HMCR ve PAR Parametreleri:** Harmony Memory Considering Rate (HMCR) ve Pitch Adjustment Rate (PAR) parametreleri sayesinde, algoritmanın arama davranışı üzerinde detaylı kontrol sağlanır.
+  
+- **Gelişmiş Hata Yönetimi:** Kullanıcı girdilerindeki hatalara karşı sağlam uyarı ve hata mesajları ile kullanım kolaylığı artırılmıştır.
 
 ## Kullanımı ve Örnek senaryo
 
