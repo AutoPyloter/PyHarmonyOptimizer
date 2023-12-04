@@ -173,7 +173,7 @@ class Optimization(ABC):
         return new_harmony
 
     @abstractmethod
-    def optimize(self, HMCR, PAR, memory_size, max_iter):
+    def optimize(self, HMCR, PAR, memory_size, max_iter,log):
 
         """Optimizasyon sürecini gerçekleştirir."""
         pass
@@ -182,7 +182,7 @@ class Minimization(Optimization):
     """
     Belirli bir hedef fonksiyonunu minimize etmeyi amaçlayan sınıf.
     """
-    def optimize(self, HMCR=0.8, PAR=0.3, memory_size=10, max_iter=100):
+    def optimize(self, HMCR=0.8, PAR=0.3, memory_size=10, max_iter=100,log=False):
         if not isinstance(max_iter, int) or max_iter < 1:
             raise ValueError("max_iter bir tam sayı olmalı ve 1'den küçük olamaz.")
 
@@ -202,20 +202,22 @@ class Minimization(Optimization):
             tuple: En iyi uyumu ve ilgili fitness değerini içeren tuple.
         """
         self.initialize_harmony_memory(memory_size)
-        for _ in range(max_iter):
+        for index in range(max_iter):
             new_harmony = self.generate_new_harmony(HMCR, PAR)
             new_fitness = self.objective(new_harmony)
             worst_harmony = max(self.harmony_memory, key=lambda x: x[1])
             if worst_harmony[1] > new_fitness:
                 self.harmony_memory.remove(worst_harmony)
                 self.harmony_memory.append((new_harmony, new_fitness))
+            if log==True:
+                print("iterasyon:",index+1,min(self.harmony_memory, key=lambda x: x[1]))
         return min(self.harmony_memory, key=lambda x: x[1])
 
 class Maximization(Optimization):
     """
     Belirli bir hedef fonksiyonunu maksimize etmeyi amaçlayan sınıf.
     """
-    def optimize(self, HMCR=0.8, PAR=0.3, memory_size=10, max_iter=100):
+    def optimize(self, HMCR=0.8, PAR=0.3, memory_size=10, max_iter=300,log=False):
         if not isinstance(max_iter, int) or max_iter < 1:
             raise ValueError("max_iter bir tam sayı olmalı ve 1'den küçük olamaz.")
 
@@ -235,11 +237,13 @@ class Maximization(Optimization):
             tuple: En iyi uyumu ve ilgili fitness değerini içeren tuple.
         """
         self.initialize_harmony_memory(memory_size)
-        for _ in range(max_iter):
+        for index in range(max_iter):
             new_harmony = self.generate_new_harmony(HMCR, PAR)
             new_fitness = self.objective(new_harmony)
             worst_harmony = min(self.harmony_memory, key=lambda x: x[1])
             if worst_harmony[1] < new_fitness:
                 self.harmony_memory.remove(worst_harmony)
                 self.harmony_memory.append((new_harmony, new_fitness))
+            if log==True:
+                print("iterasyon:",index+1,min(self.harmony_memory, key=lambda x: x[1]))
         return max(self.harmony_memory, key=lambda x: x[1])
