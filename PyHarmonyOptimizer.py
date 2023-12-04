@@ -1,4 +1,5 @@
 import random
+import types
 from abc import ABC, abstractmethod
 
 class Sampler(ABC):
@@ -11,26 +12,29 @@ class Sampler(ABC):
         """Rastgele bir değer üretir."""
         pass
 
+
 class Continuous(Sampler):
     """
     Sürekli değerler için örnekleyici.
     Belirli bir aralıkta sürekli değerler üretir.
     """
-    def __init__(self, min_val, max_val):
+    def __init__(self, *args):
+        # Kullanıcının iki değerden fazla girmesini kontrol et
+        if len(args) != 2:
+            raise ValueError("Yalnızca iki değer girilmelidir: min_val ve max_val.")
+
+        min_val, max_val = args
+
+        # min_val ve max_val'ın uygun tipte olup olmadığını kontrol et
         if not isinstance(min_val, (float, int)):
             raise TypeError("min_val, bir sayı olmalıdır.")
         if not isinstance(max_val, (float, int)):
             raise TypeError("max_val, bir sayı olmalıdır.")
-        """
-        Args:
-            min_val (float): Minimum değer.
-            max_val (float): Maksimum değer.
 
-        Raises:
-            ValueError: Eğer min_val >= max_val ise.
-        """
+        # min_val ve max_val'ın mantıklı bir aralık oluşturup oluşturmadığını kontrol et
         if min_val >= max_val:
             raise ValueError("Minimum değer, maksimum değerden küçük olmalıdır.")
+
         self.min_val = min_val
         self.max_val = max_val
 
@@ -63,15 +67,12 @@ class Discrete(Sampler):
         return random.choice(self.values)
 
 class Constant(Sampler):
-    """
-    Sabit bir değer döndüren örnekleyici.
-    """
-    def __init__(self, value):
-        """
-        Args:
-            value: Döndürülecek sabit değer.
-        """
-        self.value = value
+    def __init__(self, *args):
+        # Kullanıcının yalnızca bir argüman girdiğinden emin ol
+        if len(args) != 1:
+            raise ValueError("Constant sınıfı yalnızca bir değer kabul eder.")
+
+        self.value = args[0]
 
     def sample(self):
         """Sabit değeri döndürür."""
@@ -114,10 +115,18 @@ class Optimization(ABC):
         Raises:
             ValueError: Eğer tasarım sözlüğü boş ise veya amaç fonksiyonu çağrılabilir değilse.
         """
+        if not isinstance(design, dict):
+            raise TypeError("design bir sözlük (dict) olmalıdır.")
         if not design:
             raise ValueError("Tasarım sözlüğü boş olamaz.")
         if not callable(objective):
             raise ValueError("Amaç fonksiyonu çağrılabilir bir nesne olmalıdır.")
+        if not isinstance(objective, types.FunctionType):
+            raise TypeError("objective, bir fonksiyon olmalıdır.")
+        for key, sampler in design.items():
+            if not isinstance(sampler, Sampler):
+                raise TypeError(f"{key} için örnekleyici bir Sampler türevi olmalıdır.")
+
         self.design = design
         self.objective = objective
         self.harmony_memory = []
