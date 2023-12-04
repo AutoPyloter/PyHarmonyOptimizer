@@ -45,7 +45,7 @@ Bu senaryo, fabrikanın karşılaştığı optimizasyon problemine ve bu problem
 **Bu senaryonun çözümünde modülün kullanımı**
 
 ```python
-from PyHarmonyOptimizer import Continuous, Discrete, Categorical, Constant, Minimization
+from PyHarmonyOptimizer import *
 import math
 
 class Cylinder:
@@ -87,10 +87,10 @@ class CostCalculator:
 
 def create_cylinder_design():
     return {
-        'H': Discrete([10, 12, 13, 17]),  # cm
-        'Top': Categorical(["açık", "kapalı"]),
-        'SideThickness': Continuous(2, 3),  # mm
-        'Diameter': Discrete([3, 4, 5, 6]),  # cm
+        'H': Discrete([10,12,13,17]),  # cm
+        'Top': Categorical(["açık","kapalı"]),
+        'SideThickness': Continuous(2,3),  # mm
+        'Diameter': Discrete([3,4,5,6]),  # cm
         'BaseThickness': Constant(2)  # Taban ve üst kalınlığı, mm
     }
 
@@ -104,11 +104,13 @@ def optimize_design():
         return cost_calculator.calculate_cost(cylinder)
 
     optimizer = Minimization(design, objective_function)
-    best_solution = optimizer.optimize(HMCR=0.8, PAR=0.3, memory_size=100, max_iter=1000)
+    best_solution = optimizer.optimize(max_iter=1000)
     return best_solution
-
-best_solution = optimize_design()
-print("En iyi çözüm:", best_solution)
+try:
+    best_solution = optimize_design()
+    print("En iyi çözüm:", best_solution)
+except Exception as e:
+    print(e)
 ```
 ---
 
