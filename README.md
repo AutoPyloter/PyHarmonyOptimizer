@@ -84,10 +84,8 @@ class CostCalculator:
         volume = cylinder.volume()
         metal_volume = cylinder.metal_volume()
         cost = metal_volume * self.METAL_COST_PER_CM3
-
         if volume < 250:
             cost += 100
-
         return cost
 
 def create_cylinder_design():
@@ -96,7 +94,7 @@ def create_cylinder_design():
         'Top': Categorical(["açık","kapalı"]),
         'SideThickness': Continuous(2,3),  # mm
         'Diameter': Discrete([3,4,5,6]),  # cm
-        'BaseThickness': Constant(2)  # Taban ve üst kalınlığı, mm
+        'BaseThickness': Constant(2) # Taban ve üst kalınlığı, mm
     }
 
 def optimize_design():
@@ -108,12 +106,23 @@ def optimize_design():
         cylinder = Cylinder(harmony['Diameter'], harmony['H'], harmony['SideThickness'], harmony['BaseThickness'], is_top_open)
         return cost_calculator.calculate_cost(cylinder)
 
+
     optimizer = Minimization(design, objective_function)
-    best_solution = optimizer.optimize(max_iter=1000)
+    best_solution = optimizer.optimize()
     return best_solution
+
+def print_solution(solution):
+    harmony, fitness = solution
+    print("En iyi çözümün detayları:")
+    for key, value in harmony.items():
+        print(f"  {key}: {value}")
+        pass
+    print(f"Fitness değeri: {fitness}")
+
 try:
-    best_solution = optimize_design()
-    print("En iyi çözüm:", best_solution)
+    for _ in range(1):
+        best_solution = optimize_design()
+        print_solution(best_solution)
 except Exception as e:
     print(e)
 ```
