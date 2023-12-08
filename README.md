@@ -27,104 +27,139 @@ PyHarmonyOptimizer, aşağıdaki özelliklere sahiptir:
 
 PyHarmonyOptimizer'ı kullanmak için öncelikle bir amaç fonksiyonu tanımlayın ve ardından bu fonksiyonu optimizasyon sınıfına ileterek optimizasyon işlemini başlatın. İşte basit bir kullanım örneği:
 
-**Silindirik Kutu Üretimi için Optimal Tasarım Seçimi: Bir Fabrika Senaryosu**
+# Kaynaklı Kiriş Tasarım Problemi
 
-Bir fabrikada, çeşitli amaçlar için kullanılacak yeni bir silindirik kutu imal edilecektir. Bu kutunun üretim maliyetini minimize etmek ve aynı zamanda belirli gereksinimleri karşılamak üzere, çeşitli tasarım parametreleri üzerinde karar verilmesi gerekmektedir.
+## Problem Tanımı
 
-Silindirik kutunun bazı temel özellikleri şunlardır:
+Kaynaklı kiriş tasarım problemi, yapı mühendisliğinde yaygın olarak kullanılan ve optimizasyon algoritmalarını test etmek için sıklıkla tercih edilen bir benchmark problemdir. Bu problem, bir kirişin belirli kısıtlar altında en uygun boyutlarını bulmayı amaçlar, ağırlığını minimize ederken mukavemet, yer değiştirme ve geometrik kısıtlamaları karşılamak.
 
-- **Yükseklik**: Kutunun yüksekliği, belirli standart ölçüler arasında değişebilir. Bu ölçüler 10, 12, 13 ve 17 cm olarak belirlenmiştir.
-- **Üst Kapak**: Kutunun üst kısmı, "açık" veya "kapalı" olabilir. Bu seçim, kutunun kullanım amacına ve istenen özelliklere bağlı olarak değişkenlik gösterir.
-- **Yan Yüzey Kalınlığı**: Kutunun yan yüzeylerinin kalınlığı 2 mm ile 3 mm arasında değişebilir. Ancak, üstü açık olan kutular için bu kalınlık iki katına çıkarılarak 4 mm ile 6 mm arasında olacaktır. Bu, açık kutuların daha fazla dayanıklılığa ihtiyaç duyması sebebiyledir.
-- **Çap**: Kutunun çapı, 3, 4, 5 ve 6 cm arasında değişebilir. Bu ölçü, kutunun genel boyutunu ve kapasitesini etkileyecektir.
-- **Taban ve Üst Kalınlıkları**: Bu iki kısım sabit bir kalınlığa sahip olup, her ikisi de 2 mm kalınlığında tasarlanmıştır.
+## Amaç
 
-Kutunun maliyetini etkileyen temel faktör, kullanılan metalin maliyetidir. Metalin birim fiyatı cm³ başına 3 dolar olarak belirlenmiştir. Ancak, kutunun su alma hacmi 250 cm³'ün altına düştüğünde, kutunun maliyeti 100 dolar artar. Bu, daha küçük hacimli kutuların üretim sürecinde daha fazla işçilik ve dikkat gerektirmesi nedeniyledir.
+Harmony Search algoritması kullanılarak tasarım uzayını gezerek en iyi kiriş boyutlarını bulmayı hedefler.
 
-Fabrika yönetimi, bu parametreler arasındaki en uygun kombinasyonu belirleyerek, maliyeti en aza indirmeyi ve aynı zamanda ürün kalitesini korumayı amaçlamaktadır. Bu amaçla, Harmony Search algoritması kullanılarak, en düşük maliyetli tasarım seçeneği belirlenecektir.
+## Nasıl Kullanılır
 
----
+Python kodu, [PyHarmonyOptimizer](https://github.com/qm2021/PyHarmonyOptimizer) kütüphanesini kullanır. Projenin temel sınıfı olan `WeldedBeamDesign`, kaynaklı kirişin boyutlarını ve optimizasyon parametrelerini içerir. 
 
-Bu senaryo, fabrikanın karşılaştığı optimizasyon problemine ve bu problemin çözümüne ilişkin bir kontekst sağlar.
-
-**Bu senaryonun çözümünde modülün kullanımı**
+Örnek bir tasarımın fitness değerini öğrenmek için:
 
 ```python
 from PyHarmonyOptimizer import *
-import math
-
-class Cylinder:
-    def __init__(self, diameter, height, side_thickness, base_thickness, is_top_open):
-        self.diameter = diameter
-        self.height = height
-        self.side_thickness = side_thickness
-        self.base_thickness = base_thickness
-        self.is_top_open = is_top_open
-
-    def volume(self):
-        radius = self.diameter / 2
-        return math.pi * radius ** 2 * self.height
-
-    def metal_volume(self):
-        radius = self.diameter / 2
-        base_volume = math.pi * radius ** 2 * self.base_thickness / 10
-
-        if self.is_top_open:
-            self.side_thickness *= 2
-        else:
-            base_volume += math.pi * radius ** 2 * self.base_thickness / 10
-
-        side_volume = math.pi * self.diameter * self.height * self.side_thickness / 10
-        return base_volume + side_volume
-
-class CostCalculator:
-    METAL_COST_PER_CM3 = 3  # dolar
-
-    def calculate_cost(self, cylinder):
-        volume = cylinder.volume()
-        metal_volume = cylinder.metal_volume()
-        cost = metal_volume * self.METAL_COST_PER_CM3
-        if volume < 250:
-            cost += 100
-        return cost
-
-def create_cylinder_design():
-    return {
-        'H': Discrete([10,12,13,17]),  # cm
-        'Top': Categorical(["açık","kapalı"]),
-        'SideThickness': Continuous(2,3),  # mm
-        'Diameter': Discrete([3,4,5,6]),  # cm
-        'BaseThickness': Constant(2) # Taban ve üst kalınlığı, mm
-    }
-
-def optimize_design():
-    design = create_cylinder_design()
-    cost_calculator = CostCalculator()
-
-    def objective_function(harmony):
-        is_top_open = harmony['Top'] == "açık"
-        cylinder = Cylinder(harmony['Diameter'], harmony['H'], harmony['SideThickness'], harmony['BaseThickness'], is_top_open)
-        return cost_calculator.calculate_cost(cylinder)
 
 
-    optimizer = Minimization(design, objective_function)
-    best_solution = optimizer.optimize()
-    return best_solution
+class WeldedBeamDesign:
+    YOUNGS_MODULUS = 30e6
+    SHEAR_MODULUS = 12e6
+    MAX_ITERATIONS = 2000
+    MEMORY_SIZE = 20
+    PAR_PARAMETER = 0.1
+    HMCR_PARAMETER = 0.8
+    LOAD = 6000
+    BEAM_LENGTH = 14
+    MAX_SHEAR_STRESS = 13600
+    MAX_NORMAL_STRESS = 30000
+    MAX_DISPLACEMENT = 0.25
+    NUMBER_OF_CONSTRAINTS = 7
+    RUN=30
+    OUTPUT_FILE = "output.txt"
 
-def print_solution(solution):
-    harmony, fitness = solution
-    print("En iyi çözümün detayları:")
-    for key, value in harmony.items():
-        print(f"  {key}: {value}")
-        pass
-    print(f"Fitness değeri: {fitness}")
+    def __init__(self, beam_width, beam_height, beam_thickness, weld_width):
+        self.beam_width, self.beam_height, self.beam_thickness, self.weld_width = beam_width, beam_height, \
+                                                                                  beam_thickness, weld_width
 
-try:
-    for _ in range(1):
-        best_solution = optimize_design()
-        print_solution(best_solution)
-except Exception as e:
-    print(e)
+    def compute_penalty(self):
+        p, l, ee, g, x1, x2, x3, x4 = [self.LOAD, self.BEAM_LENGTH, self.YOUNGS_MODULUS, self.SHEAR_MODULUS,
+                                       self.beam_width, self.beam_height, self.beam_thickness, self.weld_width]
+
+        delta_x = (4 * p * l ** 3) / (ee * x3 ** 3 * x4)
+        sigma_x = (6 * p * l) / (x4 * x3 ** 2)
+        pc = (4.013 * ee * ((x3 ** 2 * x4 ** 6) / 36) ** 0.5) / (l ** 2) * (1 - x3 / (2 * l) * (ee / (4 * g)) ** 0.5)
+        m = p * (l + x2 / 2)
+        r = (x2 ** 2 / 4 + ((x1 + x3) / 2) ** 2) ** 0.5
+        j = 2 * (x1 * x2 * 2 ** 0.5 * ((x2 ** 2) / 12 + ((x1 + x3) / 2) ** 2))
+        to1 = p / (x1 * x2 * 2 ** 0.5)
+        to2 = m * r / j
+        tox = (to1 ** 2 + to2 ** 2 + 2 * x2 * to1 * to2 / (2 * r)) ** 0.5
+
+        constraints = [
+            tox - self.MAX_SHEAR_STRESS,
+            sigma_x - self.MAX_NORMAL_STRESS,
+            self.beam_width - self.weld_width,
+            0.10471 * self.beam_width ** 2 +
+            0.04811 * self.beam_thickness * self.weld_width * (14 + self.beam_height) - 5,
+            0.125 - self.beam_width,
+            delta_x - self.MAX_DISPLACEMENT,
+            self.LOAD - pc
+        ]
+
+        penalties = sum(max(0, constraint) for constraint in constraints[:self.NUMBER_OF_CONSTRAINTS])
+        return penalties
+
+    def fitness(self):
+        penalty = self.compute_penalty()
+        the_fitness = 1.10471 * self.beam_width ** 2 * self.beam_height + 0.04811 * self.beam_thickness * self. \
+            weld_width * (14 + self.beam_height)
+        the_reference = penalty + 10 if penalty > 0 else the_fitness
+        return the_reference, the_fitness, penalty
+
+    @staticmethod
+    def optimize_beam_design():
+        design = {'beam_width': Continuous(0.1, 2),
+                  'beam_height': Continuous(0.1, 10),
+                  'beam_thickness': Continuous(0.1, 10),
+                  'weld_width': Continuous(0.1, 2)}
+
+        def objective_function(harmony):
+            beam = WeldedBeamDesign(harmony['beam_width'], harmony['beam_height'], harmony['beam_thickness'],
+                                    harmony['weld_width'])
+            return beam.fitness()
+
+        optimizer = Minimization(design, objective_function)
+        return optimizer.optimize(max_iter=WeldedBeamDesign.MAX_ITERATIONS,
+                                  memory_size=WeldedBeamDesign.MEMORY_SIZE,
+                                  par=WeldedBeamDesign.PAR_PARAMETER,
+                                  hmcr=WeldedBeamDesign.HMCR_PARAMETER,
+                                  log=False)
+
+    @staticmethod
+    def print_solution(solution, file=None):
+        harmony, fitness = solution
+        output = f"Details of the best solution:\n"
+        output += '\n'.join([f"  {key}: {value}" for key, value in harmony.items()])
+        output += f"\nFitness value: {fitness}\n\n"
+
+        print(output)
+        if file:
+            with open(file, 'a') as f:
+                f.write(output)
+        return fitness[0]
+
+
+def get_fitness_for_specific_design(beam_width, beam_height, beam_thickness, weld_width):
+    design = WeldedBeamDesign(beam_width, beam_height, beam_thickness, weld_width)
+    reference, fitness, penalty = design.fitness()
+    print(f"Design Parameters:\n"
+          f"  Beam Width: {beam_width}\n"
+          f"  Beam Height: {beam_height}\n"
+          f"  Beam Thickness: {beam_thickness}\n"
+          f"  Weld Width: {weld_width}\n"
+          f"Fitness Value: {fitness}\n"
+          f"Penalty: {penalty}\n"
+          f"Reference Value: {reference}")
+
+
+if __name__ == "__main__":
+    try:
+        for run_number in range(WeldedBeamDesign.RUN):
+            print(f"{run_number + 1}. run:")
+            current_solution = WeldedBeamDesign.optimize_beam_design()
+            WeldedBeamDesign.print_solution(current_solution, WeldedBeamDesign.OUTPUT_FILE)
+        get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+```python
+
 ```
 ---
 
