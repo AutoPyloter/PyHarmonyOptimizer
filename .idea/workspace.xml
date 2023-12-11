@@ -40,7 +40,7 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.WeldedBeamDesign">
+  <component name="RunManager" selected="Python.main">
     <configuration name="Deneme" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="PyHarmonyOptimizer" />
       <option name="INTERPRETER_OPTIONS" value="" />

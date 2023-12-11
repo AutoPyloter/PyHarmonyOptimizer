@@ -15,5 +15,5 @@ design = {
 
 # Optimizasyon
 optimizer = Minimization(design, objective_function)
-best_solution = optimizer.optimize(HMCR=0.8, PAR=0.3, memory_size=10, max_iter=100)
+best_solution = optimizer.optimize(hmcr=0.8, par=0.3, memory_size=10, max_iter=100)
 print("En iyi çözüm:", best_solution)
