@@ -1,89 +1,113 @@
 from PyHarmonyOptimizer import *
 
-class WeldedBeamDesign:
-    E = 30 * 10**6  # Young Modülü
-    G = 12 * 10**6  # Kayma Modülü
-    P = 6000        # Yük
-    L = 14          # Kiriş uzunluğu
-    Tomax = 13600   # Maksimum kesme gerilmesi
-    Sigmamax = 30000 # Maksimum normal gerilme
-    Deltamax = 0.25  # Maksimum yer değiştirme
-    NG = 7         # Kısıtlama sayısı
 
-    def __init__(self, x1, x2, x3, x4):
-        self.x1 = x1  # Kiriş genişliği
-        self.x2 = x2  # Kiriş yüksekliği
-        self.x3 = x3  # Kiriş kalınlığı
-        self.x4 = x4  # Kaynak genişliği
+class WeldedBeamDesign:
+    YOUNGS_MODULUS = 30e6
+    SHEAR_MODULUS = 12e6
+    MAX_ITERATIONS = 2000
+    MEMORY_SIZE = 20
+    PAR_PARAMETER = 0.1
+    HMCR_PARAMETER = 0.8
+    LOAD = 6000
+    BEAM_LENGTH = 14
+    MAX_SHEAR_STRESS = 13600
+    MAX_NORMAL_STRESS = 30000
+    MAX_DISPLACEMENT = 0.25
+    NUMBER_OF_CONSTRAINTS = 7
+    RUN=30
+    OUTPUT_FILE = "output.txt"
+
+    def __init__(self, beam_width, beam_height, beam_thickness, weld_width):
+        self.beam_width, self.beam_height, self.beam_thickness, self.weld_width = beam_width, beam_height, \
+                                                                                  beam_thickness, weld_width
 
     def compute_penalty(self):
-        delta_x = (4 * self.P * self.L**3) / (self.E * self.x3**3 * self.x4)
-        sigma_x = (6 * self.P * self.L) / (self.x4 * self.x3**2)
-        Pc = (4.013 * self.E * ((self.x3**2 * self.x4**6) / 36)**0.5) / (self.L**2) * (1 - self.x3 / (2 * self.L) * (self.E / (4 * self.G))**0.5)
-        M = self.P * (self.L + self.x2 / 2)
-        R = ((self.x2)**2 / 4 + ((self.x1 + self.x3) / 2)**2)**0.5
-        J = 2 * self.x1 * self.x2 * ((self.x2**2) / 12 + ((self.x1 + self.x3) / 2)**2)
-        To1 = self.P / (self.x1 * self.x2 * 2**0.5)
-        To2 = M * R / J
-        Tox = ((To1)**2 + (To2)**2 + 2 * self.x2 * To1 * To2 / (2 * R))**0.5
+        p, l, ee, g, x1, x2, x3, x4 = [self.LOAD, self.BEAM_LENGTH, self.YOUNGS_MODULUS, self.SHEAR_MODULUS,
+                                       self.beam_width, self.beam_height, self.beam_thickness, self.weld_width]
+
+        delta_x = (4 * p * l ** 3) / (ee * x3 ** 3 * x4)
+        sigma_x = (6 * p * l) / (x4 * x3 ** 2)
+        pc = (4.013 * ee * ((x3 ** 2 * x4 ** 6) / 36) ** 0.5) / (l ** 2) * (1 - x3 / (2 * l) * (ee / (4 * g)) ** 0.5)
+        m = p * (l + x2 / 2)
+        r = (x2 ** 2 / 4 + ((x1 + x3) / 2) ** 2) ** 0.5
+        j = 2 * (x1 * x2 * 2 ** 0.5 * ((x2 ** 2) / 12 + ((x1 + x3) / 2) ** 2))
+        to1 = p / (x1 * x2 * 2 ** 0.5)
+        to2 = m * r / j
+        tox = (to1 ** 2 + to2 ** 2 + 2 * x2 * to1 * to2 / (2 * r)) ** 0.5
 
         constraints = [
-            Tox - self.Tomax,
-            sigma_x - self.Sigmamax,
-            self.x1 - self.x4,
-            0.10471 * self.x1**2 + 0.04811 * self.x3 * self.x4 * (14 + self.x2) - 5,
-            0.125 - self.x1,
-            delta_x - self.Deltamax,
-            self.P - Pc
+            tox - self.MAX_SHEAR_STRESS,
+            sigma_x - self.MAX_NORMAL_STRESS,
+            self.beam_width - self.weld_width,
+            0.10471 * self.beam_width ** 2 +
+            0.04811 * self.beam_thickness * self.weld_width * (14 + self.beam_height) - 5,
+            0.125 - self.beam_width,
+            delta_x - self.MAX_DISPLACEMENT,
+            self.LOAD - pc
         ]
 
-        penalties = 0
-        for constraint in constraints[:self.NG]:
-            if constraint > 0:
-                penalties += constraint
-
+        penalties = sum(max(0, constraint) for constraint in constraints[:self.NUMBER_OF_CONSTRAINTS])
         return penalties
 
     def fitness(self):
         penalty = self.compute_penalty()
-        The_fitness=1.10471 * self.x1**2 * self.x2 + 0.04811 * self.x3 * self.x4 * (14 + self.x2)
-        if penalty > 0:
-            The_Reference=penalty+10
-        else:
-            The_Reference=The_fitness
-        return The_Reference, The_fitness,penalty
+        the_fitness = 1.10471 * self.beam_width ** 2 * self.beam_height + 0.04811 * self.beam_thickness * self. \
+            weld_width * (14 + self.beam_height)
+        the_reference = penalty + 10 if penalty > 0 else the_fitness
+        return the_reference, the_fitness, penalty
 
-def optimize_beam_design():
-    design = {
-        'x1': Continuous(0.1, 2),
-        'x2': Continuous(0.1, 10),
-        'x3': Continuous(0.1, 10),
-        'x4': Continuous(0.1, 2)
-    }
+    @staticmethod
+    def optimize_beam_design():
+        design = {'beam_width': Continuous(0.1, 2),
+                  'beam_height': Continuous(0.1, 10),
+                  'beam_thickness': Continuous(0.1, 10),
+                  'weld_width': Continuous(0.1, 2)}
 
-    def objective_function(harmony):
-        beam = WeldedBeamDesign(harmony['x1'], harmony['x2'], harmony['x3'], harmony['x4'])
-        return beam.fitness()
+        def objective_function(harmony):
+            beam = WeldedBeamDesign(harmony['beam_width'], harmony['beam_height'], harmony['beam_thickness'],
+                                    harmony['weld_width'])
+            return beam.fitness()
 
-    optimizer = Minimization(design, objective_function)
-    best_solution = optimizer.optimize(max_iter=2000,memory_size=500,PAR=0.4,HMCR=0.7,log=False)
-    return best_solution
+        optimizer = Minimization(design, objective_function)
+        return optimizer.optimize(max_iter=WeldedBeamDesign.MAX_ITERATIONS,
+                                  memory_size=WeldedBeamDesign.MEMORY_SIZE,
+                                  par=WeldedBeamDesign.PAR_PARAMETER,
+                                  hmcr=WeldedBeamDesign.HMCR_PARAMETER,
+                                  log=False)
 
-def print_solution(solution):
-    harmony, fitness = solution
-    print("En iyi çözümün detayları:")
-    for key, value in harmony.items():
-        print(f"  {key}: {value}")
-        pass
-    print(f"Fitness değeri: {fitness}")
-    return fitness[0]
+    @staticmethod
+    def print_solution(solution, file=None):
+        harmony, fitness = solution
+        output = f"Details of the best solution:\n"
+        output += '\n'.join([f"  {key}: {value}" for key, value in harmony.items()])
+        output += f"\nFitness value: {fitness}\n\n"
 
-try:
-   for a in range(10000):
-        print(a,". run:")
-        best_solution = optimize_beam_design()
-        thePrint=print_solution(best_solution)
-        if thePrint < 1.9229156516342583:
-            quit()
-except Exception as e:
-    print(f"Bir hata oluştu: {e}")
+        print(output)
+        if file:
+            with open(file, 'a') as f:
+                f.write(output)
+        return fitness[0]
+
+
+def get_fitness_for_specific_design(beam_width, beam_height, beam_thickness, weld_width):
+    design = WeldedBeamDesign(beam_width, beam_height, beam_thickness, weld_width)
+    reference, fitness, penalty = design.fitness()
+    print(f"Design Parameters:\n"
+          f"  Beam Width: {beam_width}\n"
+          f"  Beam Height: {beam_height}\n"
+          f"  Beam Thickness: {beam_thickness}\n"
+          f"  Weld Width: {weld_width}\n"
+          f"Fitness Value: {fitness}\n"
+          f"Penalty: {penalty}\n"
+          f"Reference Value: {reference}")
+
+
+if __name__ == "__main__":
+    try:
+        for run_number in range(WeldedBeamDesign.RUN):
+            print(f"{run_number + 1}. run:")
+            current_solution = WeldedBeamDesign.optimize_beam_design()
+            WeldedBeamDesign.print_solution(current_solution, WeldedBeamDesign.OUTPUT_FILE)
+        get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+    except Exception as e:
+        print(f"An error occurred: {e}")

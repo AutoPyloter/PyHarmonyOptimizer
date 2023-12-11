@@ -1,5 +1,6 @@
 from PyHarmonyOptimizer import *
 
+
 class OptimizasyonProblemi:
     # Constructor with the design variables limits
     def __init__(self, x1, x2, x3, x4):
@@ -10,14 +11,14 @@ class OptimizasyonProblemi:
 
     # Objective function definition
     def fitness(self):
-        return 0.6224 * self.x1 * self.x3 * self.x4 + 1.7781 * self.x2**2 * self.x3 + 3.1661 * self.x1**2 * self.x4 + 19.8621 * self.x1 * self.x3**2
+        return 0.6224 * self.x1 * self.x3 * self.x4 + 1.7781 * self.x2 ** 2 * self.x3 + 3.1661 * self.x1 ** 2 * self.x4 + 19.8621 * self.x1 * self.x3 ** 2
 
     # Constraints function definition
     def compute_penalty(self):
         penalties = 0
         g1 = -self.x1 + 0.0193 * self.x3
         g2 = -self.x2 + 0.00954 * self.x3
-        g3 = -3.141592653589793 * self.x3**2 * self.x4 - (4/3) * 3.141592653589793 * self.x3**3 + 1_296_000
+        g3 = -3.141592653589793 * self.x3 ** 2 * self.x4 - (4 / 3) * 3.141592653589793 * self.x3 ** 3 + 1_296_000
         g4 = self.x4 - 240
 
         # Check if constraints are violated and apply penalties if so
@@ -34,9 +35,10 @@ class OptimizasyonProblemi:
             fitness = self.fitness()
             the_reference = fitness + penalty if penalty > 0 else fitness
             return the_reference
-        except Exception as e:
-            print(f"An error occurred during evaluation: {e}")
+        except Exception as ee:
+            print(f"An error occurred during evaluation: {ee}")
             return float('inf')  # Return a high value to represent a bad solution in case of an error
+
 
 # Optimization function definition
 def optimize_design():
@@ -52,8 +54,9 @@ def optimize_design():
         return problem.evaluate()
 
     optimizer = Minimization(design, objective_function)
-    best_solution = optimizer.optimize(max_iter=2000, memory_size=500, PAR=0.4, HMCR=0.7, log=False)
-    return best_solution
+    current_solution = optimizer.optimize(max_iter=2000, memory_size=500, par=0.4, hmcr=0.7, log=False)
+    return current_solution
+
 
 # Function to print the best solution details
 def print_solution(solution):
@@ -62,6 +65,7 @@ def print_solution(solution):
     for key, value in harmony.items():
         print(f"  {key}: {value:.4f}")
     print(f"Fitness değeri: {fitness}")
+
 
 # Run the optimization function and print results
 if __name__ == "__main__":
