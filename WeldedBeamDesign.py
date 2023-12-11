@@ -14,7 +14,7 @@ class WeldedBeamDesign:
     MAX_NORMAL_STRESS = 30000
     MAX_DISPLACEMENT = 0.25
     NUMBER_OF_CONSTRAINTS = 7
-    RUN=30
+    RUN = 30
     OUTPUT_FILE = "output.txt"
 
     def __init__(self, beam_width, beam_height, beam_thickness, weld_width):
@@ -85,7 +85,8 @@ class WeldedBeamDesign:
         print(output)
         if file:
             with open(file, 'a') as f:
-                f.write(output)
+                # f.write(output)
+                pass
         return fitness[0]
 
 
@@ -108,6 +109,6 @@ if __name__ == "__main__":
             print(f"{run_number + 1}. run:")
             current_solution = WeldedBeamDesign.optimize_beam_design()
             WeldedBeamDesign.print_solution(current_solution, WeldedBeamDesign.OUTPUT_FILE)
-        get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+        # get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
     except Exception as e:
         print(f"An error occurred: {e}")
