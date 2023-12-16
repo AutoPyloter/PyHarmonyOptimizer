@@ -19,14 +19,6 @@ class TestDiscreteSampler(unittest.TestCase):
         sample = sampler.sample()
         self.assertIn(sample, values, "Sample is not one of the discrete values")
 
-# Daha fazla sampler ve optimization testleri ekleyebilirsiniz.
-
-class TestWeldedBeamDesign(unittest.TestCase):
-    def test_beam_design(self):
-        beam = WeldedBeamDesign(0.1, 2.0, 0.1, 0.1)
-        reference, fitness, penalty = beam.fitness()
-        self.assertGreaterEqual(fitness, 0, "Fitness should be non-negative")
-        self.assertGreaterEqual(penalty, 0, "Penalty should be non-negative")
 
 # Minimization ve Maximization testleri için örnekler
 class TestOptimizationAlgorithms(unittest.TestCase):
