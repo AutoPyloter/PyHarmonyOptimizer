@@ -4,8 +4,7 @@ import unittest
 # PyHarmonyOptimizer modülünü içe aktar
 sys.path.append('../')  # Üst klasöre erişim sağlar
 
-from pyharmonyoptimizer.PyHarmonyOptimizer import Continuous, Discrete, Constant, Categorical, Minimization, Maximization
-from pyharmonyoptimizer.welded_beam_design import WeldedBeamDesign
+from pyharmonyoptimizer.PyHarmonyOptimizer import *
 
 class TestContinuousSampler(unittest.TestCase):
     def test_sample_in_range(self):
