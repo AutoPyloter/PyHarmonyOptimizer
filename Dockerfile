@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Uygulamayı çalıştıracak komutu belirtin
-CMD ["python", "./main.py"]
+CMD ["python", "./WeldedBeamDesign.py"]
