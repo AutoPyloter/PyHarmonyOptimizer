@@ -6,7 +6,7 @@ setup(
     name='PyHarmonyOptimizer',
     version='1.0.0',
     author='Abdulkadir Özcan',
-    author_email='ornek@email.com',
+    author_email='221300247@ogrenci.karatay.edu.tr',
     description='Harmony algoritması tabanlı optimizasyon modülü',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
