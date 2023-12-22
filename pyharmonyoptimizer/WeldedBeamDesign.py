@@ -1,5 +1,6 @@
 from PyHarmonyOptimizer import *
 import math
+from functools import lru_cache
 
 class WeldedBeamDesign:
     YOUNGS_MODULUS = 30e6
@@ -50,12 +51,12 @@ class WeldedBeamDesign:
 
         penalties = sum(max(0, constraint) for constraint in constraints[:self.NUMBER_OF_CONSTRAINTS])
         return penalties
-
+    @lru_cache(maxsize=None)
     def fitness(self):
         penalty = self.compute_penalty()
         the_fitness = 1.10471 * self.beam_width ** 2 * self.beam_height + 0.04811 * self.beam_thickness * self. \
             weld_width * (14 + self.beam_height)
-        the_reference = penalty*1000+2.5  if penalty > 0 else the_fitness
+        the_reference = penalty*1000+3  if penalty > 0 else the_fitness
         return the_reference, the_fitness, penalty
 
     @staticmethod

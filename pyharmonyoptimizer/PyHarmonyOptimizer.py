@@ -195,8 +195,10 @@ class Minimization(Optimization):
     def print_harmony_memory(self):
         """Harmony belleğindeki tüm tasarımları ve fitness değerlerini yazdırır."""
         print("Harmony Memory:")
+        num=1
         for harmony, fitness in self.harmony_memory:
-            print(f"  Harmony: {harmony}, Fitness: {fitness}")
+            print(f"  Harmony {num}: {harmony}, Fitness: {fitness}")
+            num+=1
     def optimize(self, hmcr=0.8, par=0.3, memory_size=10, max_iter=100, log=False):
         if not isinstance(max_iter, int) or max_iter < 1:
             raise ValueError("The max_iter must be an integer and cannot be less than 1.")
@@ -233,7 +235,12 @@ class Maximization(Optimization):
     """
     A class designed to maximize a specific objective function.
     """
-
+    def print_harmony_memory(self):
+        """Harmony belleğindeki tüm tasarımları ve fitness değerlerini yazdırır."""
+        print("Harmony Memory:")
+        num=1
+        for harmony, fitness in self.harmony_memory:
+            print(f"  Harmony{num}: {harmony}, Fitness: {fitness}")
     def optimize(self, hmcr=0.8, par=0.3, memory_size=10, max_iter=300, log=False):
         if not isinstance(max_iter, int) or max_iter < 1:
             raise ValueError("The max_iter must be an integer and cannot be less than 1.")
