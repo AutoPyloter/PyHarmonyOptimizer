@@ -1,20 +1,20 @@
 from PyHarmonyOptimizer import *
-
+import math
 
 class WeldedBeamDesign:
     YOUNGS_MODULUS = 30e6
     SHEAR_MODULUS = 12e6
-    MAX_ITERATIONS = 2000
-    MEMORY_SIZE = 20
+    MAX_ITERATIONS = 1000
+    MEMORY_SIZE = 500
     PAR_PARAMETER = 0.1
-    HMCR_PARAMETER = 0.8
+    HMCR_PARAMETER = 0.9
     LOAD = 6000
     BEAM_LENGTH = 14
     MAX_SHEAR_STRESS = 13600
     MAX_NORMAL_STRESS = 30000
     MAX_DISPLACEMENT = 0.25
     NUMBER_OF_CONSTRAINTS = 7
-    RUN = 30
+    RUN = 1
     OUTPUT_FILE = "output.txt"
 
     def __init__(self, beam_width, beam_height, beam_thickness, weld_width):
@@ -53,7 +53,7 @@ class WeldedBeamDesign:
         penalty = self.compute_penalty()
         the_fitness = 1.10471 * self.beam_width ** 2 * self.beam_height + 0.04811 * self.beam_thickness * self. \
             weld_width * (14 + self.beam_height)
-        the_reference = penalty + 10 if penalty > 0 else the_fitness
+        the_reference = penalty*1000+2.5  if penalty > 0 else the_fitness
         return the_reference, the_fitness, penalty
 
     @staticmethod
@@ -73,7 +73,7 @@ class WeldedBeamDesign:
                                   memory_size=WeldedBeamDesign.MEMORY_SIZE,
                                   par=WeldedBeamDesign.PAR_PARAMETER,
                                   hmcr=WeldedBeamDesign.HMCR_PARAMETER,
-                                  log=False)
+                                  log=True)
 
     @staticmethod
     def print_solution(solution, file=None):
@@ -109,6 +109,6 @@ if __name__ == "__main__":
             print(f"{run_number + 1}. run:")
             current_solution = WeldedBeamDesign.optimize_beam_design()
             WeldedBeamDesign.print_solution(current_solution, WeldedBeamDesign.OUTPUT_FILE)
-        # get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+        get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
     except Exception as e:
         print(f"An error occurred: {e}")
