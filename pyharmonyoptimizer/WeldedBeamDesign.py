@@ -4,8 +4,8 @@ import math
 class WeldedBeamDesign:
     YOUNGS_MODULUS = 30e6
     SHEAR_MODULUS = 12e6
-    MAX_ITERATIONS = 1000
-    MEMORY_SIZE = 500
+    MAX_ITERATIONS = 10000
+    MEMORY_SIZE = 50
     PAR_PARAMETER = 0.1
     HMCR_PARAMETER = 0.9
     LOAD = 6000
@@ -15,6 +15,7 @@ class WeldedBeamDesign:
     MAX_DISPLACEMENT = 0.25
     NUMBER_OF_CONSTRAINTS = 7
     RUN = 1
+    ISLOG=True
     OUTPUT_FILE = "output.txt"
 
     def __init__(self, beam_width, beam_height, beam_thickness, weld_width):
@@ -69,11 +70,15 @@ class WeldedBeamDesign:
             return beam.fitness()
 
         optimizer = Minimization(design, objective_function)
-        return optimizer.optimize(max_iter=WeldedBeamDesign.MAX_ITERATIONS,
+        
+        runing=optimizer.optimize(max_iter=WeldedBeamDesign.MAX_ITERATIONS,
                                   memory_size=WeldedBeamDesign.MEMORY_SIZE,
                                   par=WeldedBeamDesign.PAR_PARAMETER,
                                   hmcr=WeldedBeamDesign.HMCR_PARAMETER,
-                                  log=True)
+                                  log=WeldedBeamDesign.ISLOG)
+        optimizer.print_harmony_memory()
+        return runing
+        
 
     @staticmethod
     def print_solution(solution, file=None):
@@ -109,6 +114,6 @@ if __name__ == "__main__":
             print(f"{run_number + 1}. run:")
             current_solution = WeldedBeamDesign.optimize_beam_design()
             WeldedBeamDesign.print_solution(current_solution, WeldedBeamDesign.OUTPUT_FILE)
-        get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+        #get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
     except Exception as e:
         print(f"An error occurred: {e}")
