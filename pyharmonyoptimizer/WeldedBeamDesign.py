@@ -16,6 +16,7 @@ class WeldedBeamDesign:
     NUMBER_OF_CONSTRAINTS = 7
     RUN = 1
     ISLOG=True
+    SHOWMEMORY=True
     OUTPUT_FILE = "output.txt"
 
     def __init__(self, beam_width, beam_height, beam_thickness, weld_width):
@@ -76,7 +77,8 @@ class WeldedBeamDesign:
                                   par=WeldedBeamDesign.PAR_PARAMETER,
                                   hmcr=WeldedBeamDesign.HMCR_PARAMETER,
                                   log=WeldedBeamDesign.ISLOG)
-        optimizer.print_harmony_memory()
+        if WeldedBeamDesign.SHOWMEMORY:
+            optimizer.print_harmony_memory()
         return runing
         
 
