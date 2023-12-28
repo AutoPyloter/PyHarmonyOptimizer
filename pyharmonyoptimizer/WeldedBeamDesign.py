@@ -118,6 +118,6 @@ if __name__ == "__main__":
             print(f"{run_number + 1}. run:")
             current_solution = WeldedBeamDesign.optimize_beam_design()
             WeldedBeamDesign.print_solution()
-        WeldedBeamDesign.get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+        #WeldedBeamDesign.get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
     except Exception as e:
         print(f"An error occurred: {e}")

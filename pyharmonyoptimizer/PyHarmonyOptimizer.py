@@ -144,8 +144,8 @@ class Optimization(ABC):
         pass
 
 
-    def update_harmony_memory(self, new_harmony, new_fitness, optimize_func):
-
+    def update_harmony_memory(self, new_harmony, optimize_func):
+        new_fitness = self.objective(new_harmony)
         comparison_harmony = optimize_func(self.harmony_memory, key=lambda x: x[1])
 
         if (optimize_func == max and comparison_harmony[1] > new_fitness) or \
@@ -176,8 +176,8 @@ class Minimization(Optimization):
         self.initialize_harmony_memory(memory_size)
         for index in range(max_iter):
             new_harmony = self.generate_new_harmony(hmcr, par)
-            new_fitness = self.objective(new_harmony)
-            self.update_harmony_memory(new_harmony, new_fitness, max)
+            
+            self.update_harmony_memory(new_harmony, max)
 
             if log:
                 print("iteration:", index + 1, min(self.harmony_memory, key=lambda x: x[1]))
@@ -200,8 +200,7 @@ class Maximization(Optimization):
 
         for index in range(max_iter):
             new_harmony = self.generate_new_harmony(hmcr, par)
-            new_fitness = self.objective(new_harmony)
-            self.update_harmony_memory(new_harmony, new_fitness, min)
+            self.update_harmony_memory(new_harmony, min)
 
             if log:
                 print("iteration:", index + 1, max(self.harmony_memory, key=lambda x: x[1]))
