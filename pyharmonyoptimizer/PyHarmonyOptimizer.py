@@ -153,21 +153,19 @@ class Optimization(ABC):
             self.harmony_memory.remove(comparison_harmony)
             self.harmony_memory.append((new_harmony, new_fitness))
 
+            
+    def print_harmony_memory(self):
+        print("Harmony Memory:")
+        num = 1
+        for harmony, fitness in self.harmony_memory:
+            print(f"  Harmony {num}: {harmony}, Fitness: {fitness}")
+            num += 1
+
 
 class Minimization(Optimization):
 
 
-    def print_harmony_memory(self):
-
-        print("Harmony Memory:")
-        num=1
-
-        for harmony, fitness in self.harmony_memory:
-            print(f"  Harmony {num}: {harmony}, Fitness: {fitness}")
-            num+=1
-
-
-    def optimize(self, hmcr=0.8, par=0.3, memory_size=10, max_iter=100, log=False):
+    def optimize(self, hmcr=0.8, par=0.3, memory_size=20, max_iter=1000, log=False):
 
         if not isinstance(max_iter, int) or max_iter < 1:
             raise ValueError("The max_iter must be an integer and cannot be less than 1.")
@@ -190,16 +188,7 @@ class Minimization(Optimization):
 class Maximization(Optimization):
 
 
-    def print_harmony_memory(self):
-
-        print("Harmony Memory:")
-        num=1
-
-        for harmony, fitness in self.harmony_memory:
-            print(f"  Harmony{num}: {harmony}, Fitness: {fitness}")
-
-
-    def optimize(self, hmcr=0.8, par=0.3, memory_size=10, max_iter=300, log=False):
+    def optimize(self, hmcr=0.8, par=0.3, memory_size=20, max_iter=1000, log=False):
 
         if not isinstance(max_iter, int) or max_iter < 1:
             raise ValueError("The max_iter must be an integer and cannot be less than 1.")

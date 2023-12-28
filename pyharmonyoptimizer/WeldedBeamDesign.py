@@ -17,7 +17,7 @@ class WeldedBeamDesign:
     NUMBER_OF_CONSTRAINTS = 7
     RUN = 1
     ISLOG=True
-    SHOWMEMORY=True
+    SHOWMEMORY=False
     OUTPUT_FILE = "output.txt"
 
     def __init__(self, beam_width, beam_height, beam_thickness, weld_width):
@@ -59,56 +59,57 @@ class WeldedBeamDesign:
         the_reference = penalty*1000+3  if penalty > 0 else the_fitness
         return the_reference, the_fitness, penalty
 
-    @staticmethod
-    def optimize_beam_design():
+    @classmethod
+    def optimize_beam_design(cls):
         design = {'beam_width': Continuous(0.1, 2),
                   'beam_height': Continuous(0.1, 10),
                   'beam_thickness': Continuous(0.1, 10),
                   'weld_width': Continuous(0.1, 2)}
 
         def objective_function(harmony):
-            beam = WeldedBeamDesign(harmony['beam_width'], harmony['beam_height'], harmony['beam_thickness'],
+            beam = cls(harmony['beam_width'], harmony['beam_height'], harmony['beam_thickness'],
                                     harmony['weld_width'])
             return beam.fitness()
 
         optimizer = Minimization(design, objective_function)
         
-        runing=optimizer.optimize(max_iter=WeldedBeamDesign.MAX_ITERATIONS,
-                                  memory_size=WeldedBeamDesign.MEMORY_SIZE,
-                                  par=WeldedBeamDesign.PAR_PARAMETER,
-                                  hmcr=WeldedBeamDesign.HMCR_PARAMETER,
-                                  log=WeldedBeamDesign.ISLOG)
-        if WeldedBeamDesign.SHOWMEMORY:
+        cls.running= optimizer.optimize(max_iter=cls.MAX_ITERATIONS,
+                              memory_size=cls.MEMORY_SIZE,
+                              par=cls.PAR_PARAMETER,
+                              hmcr=cls.HMCR_PARAMETER,
+                              log=cls.ISLOG)
+        if cls.SHOWMEMORY:
             optimizer.print_harmony_memory()
-        return runing
+        return cls.running
         
 
-    @staticmethod
-    def print_solution(solution, file=None):
-        harmony, fitness = solution
+    @classmethod
+    def print_solution(cls):
+        harmony, fitness = cls.running
         output = f"Details of the best solution:\n"
         output += '\n'.join([f"  {key}: {value}" for key, value in harmony.items()])
         output += f"\nFitness value: {fitness}\n\n"
 
         print(output)
-        if file:
-            with open(file, 'a') as f:
+        if cls.OUTPUT_FILE:
+            with open(cls.OUTPUT_FILE, 'a') as f:
                 # f.write(output)
                 pass
         return fitness[0]
 
-
-def get_fitness_for_specific_design(beam_width, beam_height, beam_thickness, weld_width):
-    design = WeldedBeamDesign(beam_width, beam_height, beam_thickness, weld_width)
-    reference, fitness, penalty = design.fitness()
-    print(f"Design Parameters:\n"
-          f"  Beam Width: {beam_width}\n"
-          f"  Beam Height: {beam_height}\n"
-          f"  Beam Thickness: {beam_thickness}\n"
-          f"  Weld Width: {weld_width}\n"
-          f"Fitness Value: {fitness}\n"
-          f"Penalty: {penalty}\n"
-          f"Reference Value: {reference}")
+    @classmethod
+    def get_fitness_for_specific_design(clc,beam_width, beam_height, beam_thickness, weld_width):
+        design = clc(beam_width, beam_height, beam_thickness, weld_width)
+        reference, fitness, penalty = design.fitness()
+        print(f"Design Parameters:\n"
+            f"  Beam Width: {beam_width}\n"
+            f"  Beam Height: {beam_height}\n"
+            f"  Beam Thickness: {beam_thickness}\n"
+            f"  Weld Width: {weld_width}\n"
+            f"Reference Value: {reference}\n"
+            f"Fitness Value: {fitness}\n"
+            f"Penalty: {penalty}\n"
+            )
 
 
 if __name__ == "__main__":
@@ -116,7 +117,7 @@ if __name__ == "__main__":
         for run_number in range(WeldedBeamDesign.RUN):
             print(f"{run_number + 1}. run:")
             current_solution = WeldedBeamDesign.optimize_beam_design()
-            WeldedBeamDesign.print_solution(current_solution, WeldedBeamDesign.OUTPUT_FILE)
-        #get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+            WeldedBeamDesign.print_solution()
+        WeldedBeamDesign.get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
     except Exception as e:
         print(f"An error occurred: {e}")
