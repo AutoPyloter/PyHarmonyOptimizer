@@ -1,12 +1,13 @@
 from PyHarmonyOptimizer import *
 import math
 from functools import lru_cache
+import time
 
 class WeldedBeamDesign:
     YOUNGS_MODULUS = 30e6
     SHEAR_MODULUS = 12e6
     MAX_ITERATIONS = 10000
-    MEMORY_SIZE = 50
+    MEMORY_SIZE = 5000
     PAR_PARAMETER = 0.1
     HMCR_PARAMETER = 0.9
     LOAD = 6000
@@ -114,10 +115,13 @@ class WeldedBeamDesign:
 
 if __name__ == "__main__":
     try:
+        start=time.time()
         for run_number in range(WeldedBeamDesign.RUN):
             print(f"{run_number + 1}. run:")
             current_solution = WeldedBeamDesign.optimize_beam_design()
             WeldedBeamDesign.print_solution()
         #WeldedBeamDesign.get_fitness_for_specific_design(0.206741, 3.65285, 8.54856, 0.231265)
+        end=time.time()
+        print("süre:",end-start)
     except Exception as e:
         print(f"An error occurred: {e}")
