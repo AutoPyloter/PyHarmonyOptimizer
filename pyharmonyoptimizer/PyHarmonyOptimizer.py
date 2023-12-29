@@ -1,6 +1,11 @@
 import random
 import types
 from abc import ABC, abstractmethod
+import os
+
+os_system = os.name
+
+os.system('cls')
 
 
 class Sampler(ABC):
@@ -180,6 +185,7 @@ class Minimization(Optimization):
             self.update_harmony_memory(new_harmony, max)
 
             if log:
+                #os.system('cls')
                 print("iteration:", index + 1, min(self.harmony_memory, key=lambda x: x[1]))
 
         return min(self.harmony_memory, key=lambda x: x[1])

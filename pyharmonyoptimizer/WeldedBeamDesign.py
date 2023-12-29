@@ -2,22 +2,27 @@ from PyHarmonyOptimizer import *
 import math
 from functools import lru_cache
 import time
+import os
+
+os_system = os.name
+
+os.system('cls')
 
 class WeldedBeamDesign:
     YOUNGS_MODULUS = 30e6
     SHEAR_MODULUS = 12e6
-    MAX_ITERATIONS = 10000
-    MEMORY_SIZE = 5000
-    PAR_PARAMETER = 0.1
-    HMCR_PARAMETER = 0.9
+    MAX_ITERATIONS = 1000
+    MEMORY_SIZE = 100
+    PAR_PARAMETER = 0.2
+    HMCR_PARAMETER = 0.5
     LOAD = 6000
     BEAM_LENGTH = 14
     MAX_SHEAR_STRESS = 13600
     MAX_NORMAL_STRESS = 30000
     MAX_DISPLACEMENT = 0.25
     NUMBER_OF_CONSTRAINTS = 7
-    RUN = 1
-    ISLOG=True
+    RUN = 100
+    ISLOG=False
     SHOWMEMORY=False
     OUTPUT_FILE = "output.txt"
 
