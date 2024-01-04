@@ -1,5 +1,6 @@
 from PyHarmonyOptimizer import *
 
+
 design_space = {
     'x1': Continuous(0.1,2),
     'x2': Continuous(0.1,10),
@@ -41,6 +42,26 @@ def obj_func(harmony):
 
     return the_fitness, penalty
 
-optimizer = Minimization(design_space, obj_func)
-optimizer.optimize(hmcr=0.8, par=0.3, memory_size=200, max_iter=5000, log=True)
 
+for hmcr in [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]:
+    for par in [0, 0.1,0.2,0.3,0.4,0.5]:
+        the_best_one = ""
+        the_best_fit = float('inf')
+        dosya_adi = f'sonuclar{int(hmcr*10)}{int(par*10)}.txt'
+        en_iyi_dosya_adi = f'en_iyi_sonuc{int(hmcr*10)}{int(par*10)}.txt'
+
+        with open(dosya_adi, 'w') as dosya:
+            for i in range(100):
+                optimizer = Minimization(design_space, obj_func)
+                text = optimizer.optimize(hmcr=hmcr, par=par, memory_size=20, max_iter=5000, log=True)
+                dosya.write(f"Run {i+1}:\n{text[0]} {text[1]}\n")
+
+                if the_best_fit is None or text[1] < the_best_fit:
+                    the_best_fit = text[1]
+                    the_best_one = text[0]
+
+        # Tüm iterasyonlar tamamlandıktan sonra en iyi sonucu ve fitness değerini kaydet
+        with open(en_iyi_dosya_adi, 'w') as en_iyi_dosya:
+            en_iyi_dosya.write(f"En iyi sonuç: {the_best_one}\nEn iyi fitness: {the_best_fit}\n")
+
+        print(f"hmcr={hmcr}, par={par}: En iyi sonuç: {the_best_one}, En iyi fitness: {the_best_fit}")

@@ -136,6 +136,7 @@ class Minimization(Optimization):
 
     def optimize(self, hmcr=0.8, par=0.3, memory_size=20, max_iter=1000, log=False):
         self.initialize_harmony_memory(memory_size)
+        out=""
         for index in range(max_iter):
             new_harmony = self.generate_new_harmony(hmcr, par)
             self.update_harmony_memory(new_harmony)
@@ -143,5 +144,7 @@ class Minimization(Optimization):
             if log:
                 best_harmony = self.harmony_memory[self.best_index]
                 best_penalty = self.penalty_memory[self.best_index]
-                print(f"Iteration {index+1}, Harmnoy: {best_harmony}, Fitness: {self.best_fit}, Penalty: {best_penalty}")
+                
+                out+=(f"Iteration {index+1}, Harmony: {best_harmony}, Fitness: {self.best_fit}, Penalty: {best_penalty}\n")
+        return out, self.best_fit
         
