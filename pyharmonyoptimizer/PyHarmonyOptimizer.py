@@ -1,3 +1,4 @@
+#PyHarmonyOptimizer.py
 import random
 import types
 from abc import ABC, abstractmethod
@@ -16,7 +17,6 @@ class Continuous(Sampler):
         min_val, max_val = args
         self.min_val = min_val
         self.max_val = max_val
-
     def sample(self):
         return random.uniform(self.min_val, self.max_val)
 
@@ -45,6 +45,8 @@ class Categorical(Sampler):
 
     def sample(self):
         return random.choice(self.categories)
+
+
 
 
 class Optimization(ABC):
@@ -145,6 +147,8 @@ class Minimization(Optimization):
                 best_harmony = self.harmony_memory[self.best_index]
                 best_penalty = self.penalty_memory[self.best_index]
                 
-                out+=(f"Iteration {index+1}, Harmony: {best_harmony}, Fitness: {self.best_fit}, Penalty: {best_penalty}\n")
-        return out, self.best_fit
+                out=(f"Iteration {index+1}, Harmony: {best_harmony}, Fitness: {self.best_fit}, Penalty: {best_penalty}")
+                if log:
+                    print(out)
+        return out,self.best_fit
         
